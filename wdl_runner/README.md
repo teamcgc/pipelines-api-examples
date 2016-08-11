@@ -125,12 +125,12 @@ gcloud \
   alpha genomics pipelines run \
   --pipeline-file workflows/wdl_pipeline_from_git.yaml \
   --zones us-central1-f \
-  --logging gs://${YOUR-BUCKET}/pipelines-api-examples/wdl_runner/logging \
+  --logging gs://${YOUR_BUCKET}/pipelines-api-examples/wdl_runner/logging \
   --inputs-from-file WDL=workflows/vcf_chr_count/vcf_chr_count.wdl \
   --inputs-from-file WORKFLOW_INPUTS=workflows/vcf_chr_count/vcf_chr_count.sample.inputs.json \
   --inputs-from-file WORKFLOW_OPTIONS=workflows/common/basic.jes.us.options.json \
-  --inputs WORKSPACE=gs://${YOUR-BUCKET}/pipelines-api-examples/wdl_runner/workspace \
-  --inputs OUTPUTS=gs://${YOUR-BUCKET}/pipelines-api-examples/wdl_runner/output
+  --inputs WORKSPACE=gs://${YOUR_BUCKET}/pipelines-api-examples/wdl_runner/workspace \
+  --inputs OUTPUTS=gs://${YOUR_BUCKET}/pipelines-api-examples/wdl_runner/output
 ```
 
 * Replace `YOUR-BUCKET` environment variable with a bucket in your project.
@@ -151,12 +151,12 @@ gcloud \
   alpha genomics pipelines run \
   --pipeline-file workflows/wdl_pipeline.yaml \
   --zones us-central1-f \
-  --logging gs://${YOUR-BUCKET}/pipelines-api-examples/wdl_runner/logging \
+  --logging gs://${YOUR_BUCKET}/pipelines-api-examples/wdl_runner/logging \
   --inputs-from-file WDL=workflows/vcf_chr_count/vcf_chr_count.wdl \
   --inputs-from-file WORKFLOW_INPUTS=workflows/vcf_chr_count/vcf_chr_count.sample.inputs.json \
   --inputs-from-file WORKFLOW_OPTIONS=workflows/common/basic.jes.us.options.json \
-  --inputs WORKSPACE=gs://${YOUR-BUCKET}/pipelines-api-examples/wdl_runner/workspace \
-  --inputs OUTPUTS=gs://${YOUR-BUCKET}/pipelines-api-examples/wdl_runner/output
+  --inputs WORKSPACE=gs://${YOUR_BUCKET}/pipelines-api-examples/wdl_runner/workspace \
+  --inputs OUTPUTS=gs://${YOUR_BUCKET}/pipelines-api-examples/wdl_runner/output
 ```
 
 * Replace `YOUR-BUCKET` environment variable with a bucket in your project.
@@ -195,7 +195,7 @@ If none, then the operation should have finished successfully.
 
 ```
 YOUR_BUCKET=The_name_of_your_bucket
-$ gsutil ls -l gs://${YOUR-BUCKET}/pipelines-api-examples/wdl_runner/output
+$ gsutil ls -l gs://${YOUR_BUCKET}/pipelines-api-examples/wdl_runner/output
         46  2016-06-23T18:41:14Z  gs://YOUR-BUCKET/pipelines-api-examples/wdl_runner/output/output.txt
      12979  2016-06-23T18:41:11Z  gs://YOUR-BUCKET/pipelines-api-examples/wdl_runner/output/wdl_run_metadata.json
 TOTAL: 2 objects, 13025 bytes (12.72 KiB)
@@ -206,7 +206,7 @@ TOTAL: 2 objects, 13025 bytes (12.72 KiB)
 ## (6) Check the output
 
 ```
-$ gsutil cat gs://${YOUR-BUCKET}/pipelines-api-examples/wdl_runner/output/output.txt
+$ gsutil cat gs://${YOUR_BUCKET}/pipelines-api-examples/wdl_runner/output/output.txt
 chrM.vcf 197
 chrX.vcf 4598814
 chrY.vcf 653100
