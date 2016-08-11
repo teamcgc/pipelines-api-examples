@@ -120,19 +120,20 @@ gcloud docker push gcr.io/YOUR-PROJECT-ID/wdl_runner
 #### Run the following command:
 
 ```
+YOUR_BUCKET=The_name_of_your_bucket
 gcloud \
   alpha genomics pipelines run \
   --pipeline-file workflows/wdl_pipeline_from_git.yaml \
   --zones us-central1-f \
-  --logging gs://YOUR-BUCKET/pipelines-api-examples/wdl_runner/logging \
+  --logging gs://${YOUR-BUCKET}/pipelines-api-examples/wdl_runner/logging \
   --inputs-from-file WDL=workflows/vcf_chr_count/vcf_chr_count.wdl \
   --inputs-from-file WORKFLOW_INPUTS=workflows/vcf_chr_count/vcf_chr_count.sample.inputs.json \
   --inputs-from-file WORKFLOW_OPTIONS=workflows/common/basic.jes.us.options.json \
-  --inputs WORKSPACE=gs://YOUR-BUCKET/pipelines-api-examples/wdl_runner/workspace \
-  --inputs OUTPUTS=gs://YOUR-BUCKET/pipelines-api-examples/wdl_runner/output
+  --inputs WORKSPACE=gs://${YOUR-BUCKET}/pipelines-api-examples/wdl_runner/workspace \
+  --inputs OUTPUTS=gs://${YOUR-BUCKET}/pipelines-api-examples/wdl_runner/output
 ```
 
-* Replace `YOUR-BUCKET` with a bucket in your project.
+* Replace `YOUR-BUCKET` environment variable with a bucket in your project.
 
 The output will be an operation ID for the Pipeline.
 
@@ -145,19 +146,20 @@ The output will be an operation ID for the Pipeline.
 #### Run the following command:
 
 ```
+YOUR_BUCKET=The_name_of_your_bucket
 gcloud \
   alpha genomics pipelines run \
   --pipeline-file workflows/wdl_pipeline.yaml \
   --zones us-central1-f \
-  --logging gs://YOUR-BUCKET/pipelines-api-examples/wdl_runner/logging \
+  --logging gs://${YOUR-BUCKET}/pipelines-api-examples/wdl_runner/logging \
   --inputs-from-file WDL=workflows/vcf_chr_count/vcf_chr_count.wdl \
   --inputs-from-file WORKFLOW_INPUTS=workflows/vcf_chr_count/vcf_chr_count.sample.inputs.json \
   --inputs-from-file WORKFLOW_OPTIONS=workflows/common/basic.jes.us.options.json \
-  --inputs WORKSPACE=gs://YOUR-BUCKET/pipelines-api-examples/wdl_runner/workspace \
-  --inputs OUTPUTS=gs://YOUR-BUCKET/pipelines-api-examples/wdl_runner/output
+  --inputs WORKSPACE=gs://${YOUR-BUCKET}/pipelines-api-examples/wdl_runner/workspace \
+  --inputs OUTPUTS=gs://${YOUR-BUCKET}/pipelines-api-examples/wdl_runner/output
 ```
 
-* Replace `YOUR-BUCKET` with a bucket in your project.
+* Replace `YOUR-BUCKET` environment variable with a bucket in your project.
 
 The output will be an operation ID for the Pipeline.
 
@@ -192,7 +194,8 @@ If none, then the operation should have finished successfully.
 ## (5) Check that the output exists
 
 ```
-$ gsutil ls -l gs://YOUR-BUCKET/pipelines-api-examples/wdl_runner/output
+YOUR_BUCKET=The_name_of_your_bucket
+$ gsutil ls -l gs://${YOUR-BUCKET}/pipelines-api-examples/wdl_runner/output
         46  2016-06-23T18:41:14Z  gs://YOUR-BUCKET/pipelines-api-examples/wdl_runner/output/output.txt
      12979  2016-06-23T18:41:11Z  gs://YOUR-BUCKET/pipelines-api-examples/wdl_runner/output/wdl_run_metadata.json
 TOTAL: 2 objects, 13025 bytes (12.72 KiB)
@@ -203,7 +206,7 @@ TOTAL: 2 objects, 13025 bytes (12.72 KiB)
 ## (6) Check the output
 
 ```
-$ gsutil cat gs://YOUR-BUCKET/pipelines-api-examples/wdl_runner/output/output.txt
+$ gsutil cat gs://${YOUR-BUCKET}/pipelines-api-examples/wdl_runner/output/output.txt
 chrM.vcf 197
 chrX.vcf 4598814
 chrY.vcf 653100
@@ -219,7 +222,7 @@ written to the WORKSPACE path you specified in the `gcloud` command above.
 To remove these files, run:
 
 ```
-gsutil -m rm gs://YOUR-BUCKET/pipelines-api-examples/wdl_runner/workspace/**
+gsutil -m rm gs://${YOUR-BUCKET}/pipelines-api-examples/wdl_runner/workspace/**
 ```
 
 * Replace `YOUR-BUCKET` with a bucket in your project.
