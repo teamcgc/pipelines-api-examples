@@ -165,25 +165,87 @@ The output will be an operation ID for the Pipeline.
 
 ## (3) Monitor the pipeline operation
 
-This github repo includes a shell script, [../tools/poll.sh](../tools/poll.sh), for monitoring the completion status of an operation.
+This github repo includes a shell script,
+[./tools/monitor_wdl_pipelines.sh](./tools/monitor_wdl_pipelines.sh),
+for monitoring the status of a pipeline launched using the
+``wdl_pipeline.yaml`` or ``wdl_pipeline_from_git.yaml`` files.
 
 ```
-$../tools/poll.sh YOUR-NEW-OPERATION-ID
-Operation not complete. Sleeping 20 seconds
-Operation not complete. Sleeping 20 seconds
-...
-Operation not complete. Sleeping 20 seconds
+$ ./tools/monitor_wdl_pipeline.sh YOUR-NEW-OPERATION-ID
+Logging: gs://YOUR-BUCKET/pipelines-api-examples/wdl_runner/logging
+Workspace: gs://YOUR-BUCKET/pipelines-api-examples/wdl_runner/workspace
+Outputs: gs://YOUR-BUCKET/pipelines-api-examples/wdl_runner/output
 
-Operation complete
-done: true
-metadata:
-  '@type': type.googleapis.com/google.genomics.v1.OperationMetadata
-  clientId: ''
-  createTime: '2016-06-23T18:22:31.000Z'
-  endTime: '2016-06-23T18:41:18.000Z'
+2016-09-01 09:37:44: operation not complete
+No operations logs found.
+There are 0 output files
+Sleeping 60 seconds
+
 ...
-  startTime: '2016-06-23T18:22:42.000Z'
-name: operations/YOUR-NEW-OPERATION-ID
+
+2016-09-01 09:40:53: operation not complete
+Calls started but not complete:
+  call-vcf_split
+Sleeping 60 seconds
+
+...
+
+2016-09-01 09:44:02: operation not complete
+Operation logs found: 
+  YOUR-NEW-OPERATION-ID.log
+  YOUR-NEW-OPERATION-ID.log
+  YOUR-NEW-OPERATION-ID
+Calls (including shards) completed: 1
+Calls started but not complete:
+  call-vcf_record_count/shard-0
+  call-vcf_record_count/shard-1
+  call-vcf_record_count/shard-2
+Sleeping 60 seconds
+
+...
+
+2016-09-01 09:54:31: operation not complete
+Calls (including shards) completed: 4
+No calls currently in progress.
+  (Transitioning to next stage or copying final output).
+Sleeping 60 seconds
+
+2016-09-01 09:55:34: operation not complete
+Calls (including shards) completed: 4
+Calls started but not complete:
+  call-gather
+Sleeping 60 seconds
+
+2016-09-01 09:56:37: operation not complete
+Calls (including shards) completed: 5
+No calls currently in progress.
+  (Transitioning to next stage or copying final output).
+There are 1 output files
+Sleeping 60 seconds
+
+2016-09-01 09:57:40: operation complete
+Completed operation status information
+  done: true
+  metadata:
+    events:
+    - description: start
+      startTime: '2016-09-01T16:38:18.215458712Z'
+    - description: pulling-image
+      startTime: '2016-09-01T16:38:18.215809129Z'
+    - description: localizing-files
+      startTime: '2016-09-01T16:38:42.613937060Z'
+    - description: running-docker
+      startTime: '2016-09-01T16:38:42.613978300Z'
+    - description: delocalizing-files
+      startTime: '2016-09-01T16:56:42.144127783Z'
+    - description: ok
+      startTime: '2016-09-01T16:56:43.725128719Z'
+  name: operations/YOUR-NEW-OPERATION-ID
+  gs://YOUR-BUCKET/pipelines-api-examples/wdl_runner/output/output.txt
+  gs://YOUR-BUCKET/pipelines-api-examples/wdl_runner/output/wdl_run_metadata.json
+
+Preemptions:
+  None
 ```
 
 ## (4) Check the results
@@ -198,7 +260,11 @@ YOUR_BUCKET=The_name_of_your_bucket
 $ gsutil ls -l gs://${YOUR_BUCKET}/pipelines-api-examples/wdl_runner/output
         46  2016-06-23T18:41:14Z  gs://YOUR-BUCKET/pipelines-api-examples/wdl_runner/output/output.txt
      12979  2016-06-23T18:41:11Z  gs://YOUR-BUCKET/pipelines-api-examples/wdl_runner/output/wdl_run_metadata.json
+$ gsutil ls -l gs://YOUR-BUCKET/pipelines-api-examples/wdl_runner/output
 TOTAL: 2 objects, 13025 bytes (12.72 KiB)
+        46  2016-09-01T16:56:40Z  gs://YOUR-BUCKET/pipelines-api-examples/wdl_runner/output/output.txt
+     15069  2016-09-01T16:56:37Z  gs://YOUR-BUCKET/pipelines-api-examples/wdl_runner/output/wdl_run_metadata.json
+TOTAL: 2 objects, 15115 bytes (14.76 KiB)
 ```
 
 * Replace `YOUR-BUCKET` with a bucket in your project.
@@ -227,3 +293,39 @@ gsutil -m rm gs://${YOUR-BUCKET}/pipelines-api-examples/wdl_runner/workspace/**
 
 * Replace `YOUR-BUCKET` with a bucket in your project.
 
+# Running reproducible workflows
+
+To ensure that the same software is used for each run of your workflows,
+create a Docker image as described above, and use the ``wdl_pipeline.yaml``
+file.
+
+If you prefer not to build your own Docker image, but instead use
+``wdl_pipeline_from_git.yaml``, then for each run of a workflow, the master
+node that runs Cromwell will download the latest version of:
+
+* [java:openjdk-8-jre Docker image](https://hub.docker.com/_/openjdk/)
+* [Python runtime](https://packages.debian.org/jessie/python)
+* [Google Cloud SDK](https://cloud.google.com/sdk/)
+* [Python pip](https://packages.debian.org/jessie/python/python-pip)
+* [Python requests](https://pypi.python.org/pypi/requests)
+* [Google Python Client](https://github.com/google/google-api-python-client)
+
+and will download a fixed version of Cromwell.
+
+You may want to ensure that changes to *this* repository do not impact the
+reproducibility or reliability of your workflows. You can select a specific
+software commit for this repository by passing the `GIT_BRANCH` pipeline
+argument. For example, adding:
+
+    --inputs GIT_BRANCH=f412317d5a34de3c239d161bd27a84cee1b1438e
+
+to the ``gcloud ... genomics pipelines run`` command will ensure that the
+code used to download and launch Cromwell is from time of the
+[Aug 10, 2016 commit](https://github.com/googlegenomics/pipelines-api-examples/commit/f412317d5a34de3c239d161bd27a84cee1b1438e).
+
+You can see a list of commits in this repository [on github](../../../commits/master)
+or with the command:
+
+    git log
+
+from within your clone of the repository.
